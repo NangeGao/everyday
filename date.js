@@ -48,6 +48,9 @@ Calendar.prototype = {
 			console.error("计算当前月份数据错误");
 			return;
 		}
+		for(var i=0, len=this.rowAmout*this.rows; i<len; i++) {
+			this.$calendarCache[i].$dayView.innerHTML = currentMonthArr[i].date;	
+		}
 	},
 	/**
 	 * 计算当前月份日期数据
@@ -62,7 +65,14 @@ Calendar.prototype = {
 	 */
 	calcMonthly: function(year, month) {
 		var currentMonthArr = [];
-		
+		var commonYearArr = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+		var leapYearArr = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+		for(var i=0, len=this.rowAmout*this.rows; i<len; i++) {
+			var day = {"date": i+1};
+
+			currentMonthArr.push(day);
+		}
 		return currentMonthArr;
 	}
 };
