@@ -1,0 +1,37 @@
+* {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+html {
+	padding: 10px;
+}
+h1 {
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+}
+#vessel {
+	box-sizing: border-box;
+	height: calc(100vh - 70px);
+}
+.calendar {
+	width: 100%;
+	text-align: center;
+}
+.calendar li {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 2px;
+}
+.calendar li span{
+	display: block;
+	box-sizing: border-box;
+	height: 100%;
+	background: #f3fcf3;
+	border: 1px solid #0c0;
+}
+.calendar li span.disabled{
+	background: #f3f3f3;
+	border-color: #ddd;
+}
