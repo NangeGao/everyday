@@ -23,13 +23,16 @@ h1 {
 	display: inline-block;
 	box-sizing: border-box;
 	padding: 2px;
+	vertical-align: middle;
 }
 .calendar li span{
 	display: block;
 	box-sizing: border-box;
 	height: 100%;
+	font-size: 30px;
 	background: #f3fcf3;
 	border: 1px solid #0c0;
+	padding: 10px;
 }
 .calendar li span.disabled{
 	background: #f3f3f3;

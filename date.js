@@ -1,6 +1,3 @@
-/********
-Show Date
-********/
 
 var Calendar = function(){
 	this.$vessel = document.querySelector("#vessel");
@@ -45,11 +42,14 @@ Calendar.prototype = {
 	renderMonthly: function(year, month) {
 		var currentMonthArr = this.calcMonthly(year, month);
 		if (currentMonthArr.length !== this.$calendarCache.length) {
-			console.error("计算当前月份数据错误");
+			console.error("计算当前月份渲染数据错误");
 			return;
 		}
 		for(var i=0, len=this.rowAmout*this.rows; i<len; i++) {
-			this.$calendarCache[i].$dayView.innerHTML = currentMonthArr[i].date;	
+			this.$calendarCache[i].$dayView.innerHTML = currentMonthArr[i].date;
+			if(currentMonthArr[i].ifCurrent) {
+				this.$calendarCache[i].$dayView.setAttribute("class", "disabled");
+			}	
 		}
 	},
 	/**
@@ -59,26 +59,86 @@ Calendar.prototype = {
 	 * @return {Array}  返回当前月份渲染到日历的数据，格式如下：
 	 * @example
 	 * [{
-		 isCurrent: 0,	//是否当前月份，-1：上个月；0：当前月份；1：下个月
+		 ifCurrent: 0,	//是否当前月份，-1：上个月；0：当前月份；1：下个月
 		 date: '20'		//日期
 	   },...]
 	 */
 	calcMonthly: function(year, month) {
 		var currentMonthArr = [];
-		var commonYearArr = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-		var leapYearArr = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+		var thisMonthDays = calcMonthDays(year, month);
+		var thisMonth = getProgressiveArray(thisMonthDays);
+		console.log(thisMonth);
 
-		for(var i=0, len=this.rowAmout*this.rows; i<len; i++) {
-			var day = {"date": i+1};
+		//计算上个月份
+		var lastMonthAmout = 0;	//上个月显示几天
+		var lastMonth_month = month-1 ? month-1 : 12;
+		var lastMonth_year = lastMonth_month===12 ? year-1 : year;
+		var lastMonthDays = calcMonthDays(lastMonth_year, lastMonth_month);
+		var lastMonth = (function(){
+			var arr = getProgressiveArray(lastMonthDays);
+			//计算当月第一天是星期几
+			var firstDayOfMonth = new Date(year+'-'+month+'-01');
+			var whatDay = firstDayOfMonth.getDay();
+			if (!whatDay) {		
+				whatDay = 7;	//如果是0，则是周日
+			}
+			lastMonthDays = whatDay-1;
+			arr = arr.slice(-lastMonthDays);
+			console.log('lastMonth',arr);
 
-			currentMonthArr.push(day);
+			return arr;
+		})();
+
+		//计算下个月份
+		var nextMonthAmout = this.rowAmout*this.rows - thisMonthDays - lastMonthDays;	//下个月显示几天
+		var nextMonth_month = month+1>12 ? 1 : month+1;
+		var nextMonth_year = nextMonth_month===1 ? year+1 : year;
+		var nextMonthDays = calcMonthDays(nextMonth_year, nextMonth_month);
+		var nextMonth = (function(){
+			var arr = getProgressiveArray(nextMonthDays);
+			arr = arr.slice(0, nextMonthAmout);
+			console.log('nextMonth',arr);
+
+			return arr;
+		})();
+
+		//合成渲染日期数据
+		lastMonth = lastMonth.map(function(item, index){
+			return {
+				"ifCurrent": -1,
+				"date": item
+			}
+		});
+		thisMonth = thisMonth.map(function(item, index){
+			return {
+				"ifCurrent": 0,
+				"date": item
+			}
+		});
+		nextMonth = nextMonth.map(function(item, index){
+			return {
+				"ifCurrent": 1,
+				"date": item
+			}
+		});
+		currentMonthArr = lastMonth.concat(thisMonth.concat(nextMonth));
+		console.log(currentMonthArr);
+
+
+		//计算某个月份的天数
+		function calcMonthDays(year, month) {
+			var commonYearArr = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+			return (month==2)&&((!(year%4)&&(year%100))||(!(year%400))) ? 29 : commonYearArr[month-1];
 		}
+		//生成一个[1,2,3,...,n]的数组
+		function getProgressiveArray(n) {
+			return (new Array(n)).toString().split(",").map(function(item, index){
+				return index+1;
+			});
+		}
+
 		return currentMonthArr;
 	}
 };
 
 (new Calendar()).init();
-
-
-
-
