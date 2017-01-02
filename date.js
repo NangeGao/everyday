@@ -5,12 +5,17 @@ var Calendar = function(){
 	this.vesselHeight = this.$vessel.offsetHeight;
 	this.rowAmout = 7;	//每行显示几天
 	this.rows = 6;	//一共有几行
+	this.lastMonthBtn = document.querySelector("#lastMonth");
+	this.nextMonthBtn = document.querySelector("#nextMonth");
 
 	this.today = {};
 	var today = new Date();
 	this.today.year = today.getYear() + 1900;
 	this.today.month = today.getMonth() + 1;
 	this.today.day = today.getDate();
+
+	this.currentYear = this.today.year;
+	this.currentMonth = this.today.month;
 };
 
 Calendar.prototype = {
@@ -19,9 +24,16 @@ Calendar.prototype = {
 		this.generateCalendar();
 	},
 	renderViewport: function(){
+		var weekArr = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"]
 		this.$calendarCache = [];
 		this.$calendar = document.createElement("ul");
 		this.$calendar.setAttribute("class", "calendar");
+		for(var i=0,len=this.rowAmout; i<len; i++) {
+			var $week = document.createElement("li");
+			$week.style.width = this.vesselWidth/this.rowAmout + "px";
+			$week.innerHTML = weekArr[i];
+			this.$calendar.appendChild($week);
+		}
 		for(var i=0,len=this.rowAmout*this.rows; i<len; i++) {
 			var $day = document.createElement("li");
 			$day.style.width = this.vesselWidth/this.rowAmout + "px";
@@ -38,6 +50,16 @@ Calendar.prototype = {
 	},
 	generateCalendar: function(){
 		this.renderMonthly(this.today.year, this.today.month);
+		this.lastMonthBtn.addEventListener("click", () => {
+			this.currentYear = this.currentMonth===1 ? this.currentYear-1 : this.currentYear;
+			this.currentMonth = this.currentMonth===1 ? 12 : this.currentMonth-1;
+			this.renderMonthly(this.currentYear, this.currentMonth);
+		});
+		this.nextMonthBtn.addEventListener("click", () => {
+			this.currentYear = this.currentMonth===12 ? this.currentYear+1 : this.currentYear;
+			this.currentMonth = this.currentMonth===12 ? 1 : this.currentMonth+1;
+			this.renderMonthly(this.currentYear, this.currentMonth);
+		});
 	},
 	renderMonthly: function(year, month) {
 		var currentMonthArr = this.calcMonthly(year, month);
@@ -45,11 +67,13 @@ Calendar.prototype = {
 			console.error("计算当前月份渲染数据错误");
 			return;
 		}
+		document.querySelector("#date").innerHTML = year+"年"+month+"月";
 		for(var i=0, len=this.rowAmout*this.rows; i<len; i++) {
+			this.$calendarCache[i].$dayView.removeAttribute("class");
 			this.$calendarCache[i].$dayView.innerHTML = currentMonthArr[i].date;
 			if(currentMonthArr[i].ifCurrent) {
 				this.$calendarCache[i].$dayView.setAttribute("class", "disabled");
-			}	
+			}
 		}
 	},
 	/**
@@ -82,8 +106,9 @@ Calendar.prototype = {
 			if (!whatDay) {		
 				whatDay = 7;	//如果是0，则是周日
 			}
-			lastMonthDays = whatDay-1;
-			arr = arr.slice(-lastMonthDays);
+			lastMonthDays = whatDay-1 ? whatDay-1 : 7;
+			//lastMonthDays = whatDay-1;	//两种显示方式，是否允许第一行全空
+			arr = lastMonthDays ? arr.slice(-lastMonthDays) : [];
 			console.log('lastMonth',arr);
 
 			return arr;

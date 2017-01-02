@@ -5,15 +5,28 @@
 }
 html {
 	padding: 10px;
+	font-size: 20px;
 }
 h1 {
 	height: 50px;
 	line-height: 50px;
 	text-align: center;
 }
+.panel {
+	box-sizing: border-box;
+	height: 80px;
+}
+.panel button {
+	font-size: 20px;
+	padding: 10px;
+	border-radius: 5px;
+	background: #f3fcf3;
+	border: 1px solid #0c0;
+	cursor: pointer;
+}
 #vessel {
 	box-sizing: border-box;
-	height: calc(100vh - 70px);
+	height: calc(100vh - 180px);
 }
 .calendar {
 	width: 100%;
@@ -24,6 +37,7 @@ h1 {
 	box-sizing: border-box;
 	padding: 2px;
 	vertical-align: middle;
+	height: 30px;
 }
 .calendar li span{
 	display: block;
